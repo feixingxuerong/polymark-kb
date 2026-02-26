@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { inferCategoryFromSlug, sortCategories } from '@/lib/category'
+import { extractTitleFromMarkdown } from '@/lib/markdown'
 
 const contentDir = path.join(process.cwd(), 'content/poly-knowledge')
 
@@ -11,6 +13,7 @@ export interface DocMeta {
   category?: string
   tags?: string[]
   updatedAt?: string
+  order?: number
 }
 
 export interface Doc extends DocMeta {
@@ -22,21 +25,33 @@ export function getAllDocs(): DocMeta[] {
 
   const files = getAllFiles(contentDir)
   
-  return files.map(file => {
-    const relativePath = path.relative(contentDir, file)
-    const slug = relativePath.replace(/\.mdx?$/, '').replace(/\\/g, '/')
-    const fileContent = fs.readFileSync(file, 'utf-8')
-    const { data } = matter(fileContent)
-    
-    return {
-      slug,
-      title: data.title || slug,
-      description: data.description,
-      category: data.category,
-      tags: data.tags,
-      updatedAt: data.updatedAt
-    }
-  }).sort((a, b) => a.slug.localeCompare(b.slug))
+  return files
+    .map((file) => {
+      const relativePath = path.relative(contentDir, file)
+      const slug = relativePath.replace(/\.mdx?$/, '').replace(/\\/g, '/')
+      const fileContent = fs.readFileSync(file, 'utf-8')
+      const { data, content } = matter(fileContent)
+
+      const title = (data.title as string | undefined) || extractTitleFromMarkdown(content) || slug
+      const category = (data.category as string | undefined) || inferCategoryFromSlug(slug)
+      const description = data.description as string | undefined
+
+      return {
+        slug,
+        title,
+        description,
+        category,
+        tags: data.tags as string[] | undefined,
+        updatedAt: data.updatedAt as string | undefined,
+        order: typeof data.order === 'number' ? (data.order as number) : undefined,
+      }
+    })
+    .sort((a, b) => {
+      const ao = a.order ?? 9999
+      const bo = b.order ?? 9999
+      if (ao !== bo) return ao - bo
+      return a.slug.localeCompare(b.slug)
+    })
 }
 
 function getAllFiles(dir: string): string[] {
@@ -58,7 +73,7 @@ function getAllFiles(dir: string): string[] {
 export function getDocBySlug(slug: string): Doc | null {
   const filePath = path.join(contentDir, `${slug}.md`)
   const filePathMd = path.join(contentDir, `${slug}.mdx`)
-  
+
   let fullPath = ''
   if (fs.existsSync(filePath)) {
     fullPath = filePath
@@ -67,32 +82,37 @@ export function getDocBySlug(slug: string): Doc | null {
   } else {
     return null
   }
-  
+
   const fileContent = fs.readFileSync(fullPath, 'utf-8')
   const { data, content } = matter(fileContent)
-  
+
+  const title = (data.title as string | undefined) || extractTitleFromMarkdown(content) || slug
+  const category = (data.category as string | undefined) || inferCategoryFromSlug(slug)
+
   return {
     slug,
-    title: data.title || slug,
-    description: data.description,
-    category: data.category,
-    tags: data.tags,
-    updatedAt: data.updatedAt,
-    content
+    title,
+    description: data.description as string | undefined,
+    category,
+    tags: data.tags as string[] | undefined,
+    updatedAt: data.updatedAt as string | undefined,
+    content,
   }
 }
 
 export function getDocsByCategory(): Record<string, DocMeta[]> {
   const docs = getAllDocs()
   const categories: Record<string, DocMeta[]> = {}
-  
+
   for (const doc of docs) {
     const category = doc.category || '未分类'
-    if (!categories[category]) {
-      categories[category] = []
-    }
+    if (!categories[category]) categories[category] = []
     categories[category].push(doc)
   }
-  
-  return categories
+
+  // stable category ordering
+  const orderedKeys = sortCategories(Object.keys(categories))
+  const ordered: Record<string, DocMeta[]> = {}
+  for (const k of orderedKeys) ordered[k] = categories[k]
+  return ordered
 }
