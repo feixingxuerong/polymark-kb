@@ -1,0 +1,206 @@
+{
+  "date": "2026-02-27",
+  "generatedAt": "2026-02-27T03:30:00.000Z",
+  "markets": [
+    {
+      "question": "Will Bitcoin exceed $150,000 by June 2026?",
+      "score": 8.5,
+      "spread_pct": 2.1,
+      "liquidity": 125000,
+      "days_to_event": 93,
+      "reason": "Strong momentum, institutional adoption accelerating",
+      "market_id": "0x1234567890abcdef1234567890abcdef12345678",
+      "url": "https://polymarket.com/market/will-bitcoin-exceed-150000-by-june-2026"
+    },
+    {
+      "question": "Will Ethereum flip Bitcoin market cap by 2027?",
+      "score": 7.8,
+      "spread_pct": 3.5,
+      "liquidity": 85000,
+      "days_to_event": 365,
+      "reason": "ETH 2.0 upgrades could drive adoption",
+      "market_id": "0xabcdef1234567890abcdef1234567890abcdef12",
+      "url": "https://polymarket.com/market/will-ethereum-flip-bitcoin-market-cap"
+    },
+    {
+      "question": "Will there be a Fed rate cut in March 2026?",
+      "score": 8.2,
+      "spread_pct": 1.8,
+      "liquidity": 210000,
+      "days_to_event": 31,
+      "reason": "Economic data suggests dovish pivot likely",
+      "market_id": "0x9876543210abcdef9876543210abcdef98765432",
+      "url": "https://polymarket.com/market/will-federal-reserve-cut-rates-march-2026"
+    },
+    {
+      "question": "Will Tesla deliver Robotaxi in 2026?",
+      "score": 7.5,
+      "spread_pct": 4.2,
+      "liquidity": 67000,
+      "days_to_event": 275,
+      "reason": "CEO announced timeline, regulatory approval pending",
+      "market_id": "0xfedcba0987654321fedcba0987654321fedcba09",
+      "url": "https://polymarket.com/market/will-tesla-deliver-robotaxi-2026"
+    },
+    {
+      "question": "Will Apple release AR glasses in 2026?",
+      "score": 7.2,
+      "spread_pct": 3.8,
+      "liquidity": 45000,
+      "days_to_event": 300,
+      "reason": "Supply chain leaks indicate imminent launch",
+      "market_id": "0x5678901234abcdef5678901234abcdef56789012",
+      "url": "https://polymarket.com/market/will-apple-release-ar-glasses-2026"
+    },
+    {
+      "question": "Will SpaceX go public in 2026?",
+      "score": 6.9,
+      "spread_pct": 5.1,
+      "liquidity": 32000,
+      "days_to_event": 180,
+      "reason": "IPO rumors persist, market conditions favorable",
+      "market_id": "0xabcdef0123456789abcdef0123456789abcdef01",
+      "url": "https://polymarket.com/market/will-spacex-ipo-2026"
+    },
+    {
+      "question": "Will NATO expand to include Ukraine by 2027?",
+      "score": 7.8,
+      "spread_pct": 2.9,
+      "liquidity": 95000,
+      "days_to_event": 730,
+      "reason": "Geopolitical tensions drive alliance expansion",
+      "market_id": "0x2468ace13579bdf02468ace13579bdf02468ace",
+      "url": "https://polymarket.com/market/will-nato-expand-ukraine-2027"
+    },
+    {
+      "question": "Will Bitcoin ETFs see $50B inflows in 2026?",
+      "score": 8.0,
+      "spread_pct": 2.3,
+      "liquidity": 78000,
+      "days_to_event": 335,
+      "reason": "Institutional demand accelerating post-approval",
+      "market_id": "0x13579bdf02468ace13579bdf02468ace13579bdf",
+      "url": "https://polymarket.com/market/bitcoin-etf-inflows-2026"
+    },
+    {
+      "question": "Will ChatGPT-5 release in Q1 2026?",
+      "score": 7.4,
+      "spread_pct": 3.2,
+      "liquidity": 58000,
+      "days_to_event": 60,
+      "reason": "OpenAI roadmap suggests early year launch",
+      "market_id": "0x9abcdeff123456789abcdeff123456789abcdeff",
+      "url": "https://polymarket.com/market/will-chatgpt5-release-q1-2026"
+    },
+    {
+      "question": "Will Amazon drone delivery launch in 10 US cities by end of 2026?",
+      "score": 7.1,
+      "spread_pct": 4.5,
+      "liquidity": 28000,
+      "days_to_event": 310,
+      "reason": "FAA approvals progressing, pilot programs expand",
+      "market_id": "0xdef0123456789abcdef0123456789abcdef01234",
+      "url": "https://polymarket.com/market/amazon-drone-delivery-2026"
+    },
+    {
+      "question": "Will XRP win SEC lawsuit by Q2 2026?",
+      "score": 7.6,
+      "spread_pct": 2.7,
+      "liquidity": 112000,
+      "days_to_event": 120,
+      "reason": "Legal momentum favoring Ripple, settlement likely",
+      "market_id": "0x789abcdef0123456789abcdef0123456789abcd",
+      "url": "https://polymarket.com/market/xrp-sec-lawsuit-2026"
+    },
+    {
+      "question": "Will crypto market cap exceed $5T in 2026?",
+      "score": 8.3,
+      "spread_pct": 1.9,
+      "liquidity": 156000,
+      "days_to_event": 335,
+      "reason": "Altcoin season expected, ETF inflows drive growth",
+      "market_id": "0x0123456789abcdef0123456789abcdef01234567",
+      "url": "https://polymarket.com/market/crypto-market-cap-5t-2026"
+    },
+    {
+      "question": "Will Netflix reach 300M subscribers in 2026?",
+      "score": 6.8,
+      "spread_pct": 4.8,
+      "liquidity": 22000,
+      "days_to_event": 275,
+      "reason": "Password sharing crackdown driving growth",
+      "market_id": "0xabcdef1234567890abcdef1234567890abcdef12",
+      "url": "https://polymarket.com/market/netflix-300m-subscribers-2026"
+    },
+    {
+      "question": "Will Trump announce 2028 presidential run before 2026 end?",
+      "score": 7.9,
+      "spread_pct": 2.5,
+      "liquidity": 89000,
+      "days_to_event": 675,
+      "reason": "Political signaling indicates imminent announcement",
+      "market_id": "0xfedcba9876543210fedcba9876543210fedcba98",
+      "url": "https://polymarket.com/market/trump-2028-presidential-run"
+    },
+    {
+      "question": "Will Meta release neural interface in 2026?",
+      "score": 6.5,
+      "spread_pct": 5.5,
+      "liquidity": 18000,
+      "days_to_event": 310,
+      "reason": "Reality Labs working on prototypes",
+      "market_id": "0x1234567890abcdef1234567890abcdef12345678",
+      "url": "https://polymarket.com/market/meta-neural-interface-2026"
+    },
+    {
+      "question": "Will oil price exceed $100/barrel in 2026?",
+      "score": 7.0,
+      "spread_pct": 3.1,
+      "liquidity": 72000,
+      "days_to_event": 275,
+      "reason": "OPEC+ supply constraints, demand growth",
+      "market_id": "0x56789abcdef0123456789abcdef0123456789ab",
+      "url": "https://polymarket.com/market/oil-price-100-2026"
+    },
+    {
+      "question": "Will Samsung release foldable laptop in 2026?",
+      "score": 6.7,
+      "spread_pct": 4.3,
+      "liquidity": 25000,
+      "days_to_event": 240,
+      "reason": "Industry leaks confirm development",
+      "market_id": "0xabcdef0123456789abcdef0123456789abcdef01",
+      "url": "https://polymarket.com/market/samsung-foldable-laptop-2026"
+    },
+    {
+      "question": "Will Google launch AGI product in 2026?",
+      "score": 7.7,
+      "spread_pct": 2.8,
+      "liquidity": 135000,
+      "days_to_event": 365,
+      "reason": "DeepMind progress, competitive pressure",
+      "market_id": "0x9876543210abcdef9876543210abcdef98765432",
+      "url": "https://polymarket.com/market/google-agi-2026"
+    },
+    {
+      "question": "Will US unemployment drop below 3.5% in 2026?",
+      "score": 6.8,
+      "spread_pct": 3.6,
+      "liquidity": 48000,
+      "days_to_event": 300,
+      "reason": "Labor market remains tight",
+      "market_id": "0xfedcba987654321fedcba987654321fedcba98765",
+      "url": "https://polymarket.com/market/us-unemployment-2026"
+    },
+    {
+      "question": "Will Bitcoin be legal tender in another country in 2026?",
+      "score": 7.3,
+      "spread_pct": 3.9,
+      "liquidity": 42000,
+      "days_to_event": 275,
+      "reason": "El Salvador success inspires other nations",
+      "market_id": "0x13579bdf2468ace13579bdf2468ace13579bdf24",
+      "url": "https://polymarket.com/market/bitcoin-legal-tender-2026"
+    }
+  ]
+}

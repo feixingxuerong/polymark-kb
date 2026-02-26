@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { getAllDocs, getDocsByCategory, getRecentDocs, getIndexSyncInfo } from '@/lib/docs'
+import { getLatestWatchlist, getLatestWatchlistDate, getLatestWatchlistItems } from '@/lib/watchlist'
+import { WatchlistCard } from '@/components/WatchlistCard'
 
 import { getIndexChapters } from '@/lib/nav'
 
@@ -70,6 +72,40 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* Latest Watchlist */}
+      {(() => {
+        const watchlistDate = getLatestWatchlistDate()
+        const watchlistItems = getLatestWatchlistItems(12)
+        if (!watchlistDate || watchlistItems.length === 0) return null
+
+        return (
+          <section className="mb-10">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 className="text-lg font-semibold text-zinc-300">Latest Watchlist</h2>
+              <div className="flex gap-3">
+                <Link
+                  href={`/watchlist/${watchlistDate}`}
+                  className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {watchlistDate} →
+                </Link>
+                <Link
+                  href="/watchlist/latest"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  View All →
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {watchlistItems.slice(0, 12).map((item, idx) => (
+                <WatchlistCard key={idx} item={item} />
+              ))}
+            </div>
+          </section>
+        )
+      })()}
 
       <section className="mb-10">
         <div className="grid grid-cols-3 gap-4">
