@@ -18,13 +18,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch polymark-task (source)
+      - name: Fetch polymark-task (source via GitHub API tarball)
         env:
-          POLY_TASK_TOKEN: ${{ secrets.POLY_TASK_TOKEN }}
+          GH_TOKEN: ${{ secrets.POLY_TASK_TOKEN }}
         run: |
-          rm -rf source
-          export GIT_TERMINAL_PROMPT=0
-          git clone --depth 1 "https://x-access-token:${POLY_TASK_TOKEN}@github.com/feixingxuerong/polymark-task.git" source
+          rm -rf source source.tgz
+          gh api -H "Accept: application/vnd.github+json" \
+            /repos/feixingxuerong/polymark-task/tarball/main > source.tgz
+          mkdir -p source
+          tar -xzf source.tgz -C source --strip-components=1
 
       - name: Sync files
         run: |
