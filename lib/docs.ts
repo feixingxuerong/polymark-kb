@@ -16,10 +16,35 @@ export interface DocMeta {
   updatedAt?: string
   order?: number
   mtime?: string
+  sources?: string[]
 }
 
 export interface Doc extends DocMeta {
   content: string
+  mtime?: string
+}
+
+/**
+ * Get file stats for a doc by slug.
+ */
+export function getDocStat(slug: string): { mtime: string; size: number } | null {
+  const filePath = path.join(contentDir, `${slug}.md`)
+  const filePathMd = path.join(contentDir, `${slug}.mdx`)
+
+  let fullPath = ''
+  if (fs.existsSync(filePath)) {
+    fullPath = filePath
+  } else if (fs.existsSync(filePathMd)) {
+    fullPath = filePathMd
+  } else {
+    return null
+  }
+
+  const stats = fs.statSync(fullPath)
+  return {
+    mtime: stats.mtime.toISOString(),
+    size: stats.size,
+  }
 }
 
 export function getAllDocs(): DocMeta[] {
@@ -91,6 +116,9 @@ export function getDocBySlug(slug: string): Doc | null {
   const title = (data.title as string | undefined) || extractTitleFromMarkdown(content) || slug
   const category = (data.category as string | undefined) || inferCategoryFromSlug(slug)
 
+  // Get file modification time
+  const stats = fs.statSync(fullPath)
+
   return {
     slug,
     title,
@@ -99,6 +127,8 @@ export function getDocBySlug(slug: string): Doc | null {
     tags: data.tags as string[] | undefined,
     updatedAt: data.updatedAt as string | undefined,
     content,
+    mtime: stats.mtime.toISOString(),
+    sources: data.sources as string[] | undefined,
   }
 }
 
