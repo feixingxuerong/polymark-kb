@@ -1,9 +1,12 @@
 import Link from 'next/link'
 import { getAllDocs, getDocsByCategory } from '@/lib/docs'
 
+import { getIndexChapters } from '@/lib/nav'
+
 export default function Home() {
   const docs = getAllDocs()
   const categories = getDocsByCategory()
+  const chapters = getIndexChapters()
 
   return (
     <div className="max-w-4xl">
@@ -13,7 +16,7 @@ export default function Home() {
         <p className="text-sm text-zinc-600 mt-3">提示：Cmd/Ctrl + K 搜索</p>
       </section>
 
-      <section className="mb-12">
+      <section className="mb-10">
         <div className="grid grid-cols-3 gap-4">
           <Link
             href="/docs/index"
@@ -38,6 +41,23 @@ export default function Home() {
             <h3 className="font-semibold text-zinc-100 mb-1">Checklist</h3>
             <p className="text-sm text-zinc-500">出手门槛（理论版）</p>
           </Link>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-lg font-semibold text-zinc-300 mb-4">索引章节状态</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {chapters.map((c) => (
+            <div key={c.name} className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="text-zinc-100 font-medium">{c.name}</p>
+                  <p className="text-sm text-zinc-500 mt-1 line-clamp-2">{c.desc}</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-300">{c.status}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
