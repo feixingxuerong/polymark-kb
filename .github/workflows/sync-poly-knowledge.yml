@@ -23,6 +23,8 @@ jobs:
         with:
           repository: feixingxuerong/polymark-task
           path: source
+          # GITHUB_TOKEN in this repo may not access other repos; use a PAT stored as secret.
+          token: ${{ secrets.POLY_TASK_TOKEN }}
 
       - name: Sync files
         run: |
