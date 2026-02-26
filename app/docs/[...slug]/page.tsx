@@ -3,6 +3,17 @@ import { getDocBySlug, getAllDocs } from '@/lib/docs'
 import { notFound } from 'next/navigation'
 import { Markdown } from '@/components/Markdown'
 
+function formatDate(isoString: string): string {
+  const date = new Date(isoString)
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 export async function generateStaticParams() {
   const docs = getAllDocs()
   return docs.map((doc) => ({
@@ -24,14 +35,47 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <article className="max-w-3xl">
+      {/* Metadata Header */}
+      <div className="mb-6 pb-4 border-b border-zinc-800">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
+          {doc.category && (
+            <span className="px-2 py-0.5 bg-zinc-800/50 text-zinc-400 rounded">
+              {doc.category}
+            </span>
+          )}
+          <span className="font-mono">/{doc.slug}</span>
+          {doc.mtime && (
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Last updated: {formatDate(doc.mtime)}
+            </span>
+          )}
+        </div>
+        
+        {/* Sources from frontmatter */}
+        {doc.sources && doc.sources.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-zinc-500">来源:</span>
+            {doc.sources.map((source, i) => (
+              <a
+                key={i}
+                href={source}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-400 hover:text-blue-300 hover:underline truncate max-w-[200px]"
+              >
+                {new URL(source).hostname}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-zinc-100">{doc.title}</h1>
         {doc.description && <p className="text-lg text-zinc-400 mt-2">{doc.description}</p>}
-        {doc.category && (
-          <span className="inline-block mt-3 text-xs px-2 py-1 bg-zinc-800 text-zinc-400 rounded">
-            {doc.category}
-          </span>
-        )}
       </header>
 
       <Markdown content={doc.content} />

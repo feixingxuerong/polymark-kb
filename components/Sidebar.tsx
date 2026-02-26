@@ -29,7 +29,7 @@ export function Sidebar({
         <p className="text-[11px] text-zinc-600 mt-2">Cmd/Ctrl + K 搜索</p>
       </div>
 
-      <nav className="p-4 overflow-y-auto h-[calc(100vh-110px)]">
+      <nav className="p-4 overflow-y-auto h-[calc(100vh-110px)] sidebar-scroll">
         {Object.entries(categories).map(([category, docs]) => {
           const ch = chapters.find((c) => c.name === category)
           const tone = ch ? statusTone(ch.status) : null
