@@ -18,10 +18,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch polymark-task (source)
-        run: |
-          rm -rf source
-          git clone --depth 1 https://github.com/feixingxuerong/polymark-task.git source
+      - name: Checkout polymark-task (source)
+        uses: actions/checkout@v4
+        with:
+          repository: feixingxuerong/polymark-task
+          ref: main
+          path: source
+          token: ${{ secrets.POLY_TASK_TOKEN }}
 
       - name: Sync files
         run: |
