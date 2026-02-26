@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="flex min-h-[100dvh]">
+        <div className="flex min-h-[100dvh] bg-zinc-950 text-zinc-100">
           <Sidebar categories={categories} />
           <main className="flex-1 ml-64 p-8">{children}</main>
         </div>
