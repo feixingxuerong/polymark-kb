@@ -1,8 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { inferCategoryFromSlug, sortCategories } from '@/lib/category'
+import { inferCategoryFromSlug } from '@/lib/category'
 import { extractTitleFromMarkdown } from '@/lib/markdown'
+import { getIndexChapters } from '@/lib/nav'
 
 const contentDir = path.join(process.cwd(), 'content/poly-knowledge')
 
@@ -110,9 +111,19 @@ export function getDocsByCategory(): Record<string, DocMeta[]> {
     categories[category].push(doc)
   }
 
-  // stable category ordering
-  const orderedKeys = sortCategories(Object.keys(categories))
+  // Order categories by index.md chapter table first, then fallback alphabetical.
+  const chapters = getIndexChapters().map((c) => c.name)
+  const chapterOrder = new Map(chapters.map((c, i) => [c, i]))
+
+  const keys = Object.keys(categories)
+  keys.sort((a, b) => {
+    const ao = chapterOrder.get(a) ?? 9999
+    const bo = chapterOrder.get(b) ?? 9999
+    if (ao !== bo) return ao - bo
+    return a.localeCompare(b)
+  })
+
   const ordered: Record<string, DocMeta[]> = {}
-  for (const k of orderedKeys) ordered[k] = categories[k]
+  for (const k of keys) ordered[k] = categories[k]
   return ordered
 }

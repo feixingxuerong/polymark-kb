@@ -45,19 +45,40 @@ export default function Home() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-lg font-semibold text-zinc-300 mb-4">索引章节状态</h2>
+        <div className="flex items-end justify-between gap-4 mb-4">
+          <h2 className="text-lg font-semibold text-zinc-300">索引章节状态</h2>
+          <p className="text-sm text-zinc-600">来源：index.md 的“章节/主题”表</p>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           {chapters.map((c) => (
             <div key={c.name} className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-zinc-100 font-medium">{c.name}</p>
                   <p className="text-sm text-zinc-500 mt-1 line-clamp-2">{c.desc}</p>
                 </div>
-                <span className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-300">{c.status}</span>
+                <span className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-300 shrink-0">{c.status}</span>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6 p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl">
+          <h3 className="text-sm font-semibold text-zinc-300 mb-2">Next to write（待补充）</h3>
+          <ul className="text-sm text-zinc-400 space-y-1">
+            {chapters
+              .filter((c) => c.status.includes('待'))
+              .map((c) => (
+                <li key={c.name} className="flex items-center justify-between gap-3">
+                  <span>{c.name}</span>
+                  <span className="text-xs text-zinc-600">{c.status}</span>
+                </li>
+              ))}
+            {chapters.filter((c) => c.status.includes('待')).length === 0 && (
+              <li className="text-zinc-500">暂无待补充章节</li>
+            )}
+          </ul>
         </div>
       </section>
 
