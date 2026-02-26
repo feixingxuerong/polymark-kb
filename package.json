@@ -7,10 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sync:local": "node scripts/sync-poly-knowledge.mjs"
+    "sync:local": "node scripts/sync-poly-knowledge.mjs",
+    "build:index": "node scripts/build-search-index.mjs",
+    "build": "npm run build:index && next build"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "fuse.js": "^7.1.0",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "react": "19.2.3",

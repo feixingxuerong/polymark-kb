@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getDocBySlug, getAllDocs } from '@/lib/docs'
 import { notFound } from 'next/navigation'
 import { Markdown } from '@/components/Markdown'
@@ -14,9 +15,12 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
   const slug = resolvedParams.slug.join('/')
   const doc = getDocBySlug(slug)
 
-  if (!doc) {
-    notFound()
-  }
+  if (!doc) notFound()
+
+  const all = getAllDocs()
+  const idx = all.findIndex((d) => d.slug === slug)
+  const prev = idx > 0 ? all[idx - 1] : null
+  const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null
 
   return (
     <article className="max-w-3xl">
@@ -31,6 +35,31 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
       </header>
 
       <Markdown content={doc.content} />
+
+      <hr className="border-zinc-800 my-10" />
+      <div className="flex items-center justify-between gap-4">
+        {prev ? (
+          <Link
+            className="text-sm text-zinc-400 hover:text-zinc-100"
+            href={`/docs/${prev.slug}`}
+          >
+            ← {prev.title}
+          </Link>
+        ) : (
+          <span />
+        )}
+
+        {next ? (
+          <Link
+            className="text-sm text-zinc-400 hover:text-zinc-100 text-right"
+            href={`/docs/${next.slug}`}
+          >
+            {next.title} →
+          </Link>
+        ) : (
+          <span />
+        )}
+      </div>
     </article>
   )
 }
