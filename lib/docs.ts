@@ -15,6 +15,7 @@ export interface DocMeta {
   tags?: string[]
   updatedAt?: string
   order?: number
+  mtime?: string
 }
 
 export interface Doc extends DocMeta {
@@ -126,4 +127,76 @@ export function getDocsByCategory(): Record<string, DocMeta[]> {
   const ordered: Record<string, DocMeta[]> = {}
   for (const k of keys) ordered[k] = categories[k]
   return ordered
+}
+
+/**
+ * Get recent N docs by file modification time.
+ */
+export function getRecentDocs(limit: number = 5): DocMeta[] {
+  if (!fs.existsSync(contentDir)) return []
+
+  const files = getAllFiles(contentDir)
+  
+  const docsWithMtime = files
+    .map((file) => {
+      const relativePath = path.relative(contentDir, file)
+      const slug = relativePath.replace(/\.mdx?$/, '').replace(/\\/g, '/')
+      const stats = fs.statSync(file)
+      const fileContent = fs.readFileSync(file, 'utf-8')
+      const { data, content } = matter(fileContent)
+
+      const title = (data.title as string | undefined) || extractTitleFromMarkdown(content) || slug
+      const category = (data.category as string | undefined) || inferCategoryFromSlug(slug)
+
+      return {
+        slug,
+        title,
+        description: data.description as string | undefined,
+        category,
+        tags: data.tags as string[] | undefined,
+        updatedAt: data.updatedAt as string | undefined,
+        order: typeof data.order === 'number' ? (data.order as number) : undefined,
+        mtime: stats.mtimeMs,
+      }
+    })
+    .sort((a, b) => b.mtime - a.mtime)
+    .slice(0, limit)
+    .map(({ mtime, ...doc }) => ({
+      ...doc,
+      mtime: new Date(mtime).toISOString(),
+    }))
+
+  return docsWithMtime
+}
+
+/**
+ * Get sync status from index.md - find "Last updated" line.
+ */
+export function getIndexSyncInfo(): { lastUpdated: string | null; generatedAt: string | null } {
+  const indexPath = path.join(process.cwd(), 'content/poly-knowledge/index.md')
+  const searchIndexPath = path.join(process.cwd(), 'public/search-index.json')
+
+  let lastUpdated: string | null = null
+  let generatedAt: string | null = null
+
+  // Parse index.md for "Last updated" line
+  if (fs.existsSync(indexPath)) {
+    const raw = fs.readFileSync(indexPath, 'utf8')
+    const match = raw.match(/Last updated[:\s]*(\d{4}[年/-]\d{2}[月/-]\d{2})/i)
+    if (match) {
+      lastUpdated = match[1].replace(/年/g, '-').replace(/月/g, '-').replace(/日/g, '')
+    }
+  }
+
+  // Read search-index.json generatedAt
+  if (fs.existsSync(searchIndexPath)) {
+    try {
+      const indexData = JSON.parse(fs.readFileSync(searchIndexPath, 'utf8'))
+      generatedAt = indexData.generatedAt || null
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  return { lastUpdated, generatedAt }
 }

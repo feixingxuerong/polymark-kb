@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getAllDocs, getDocsByCategory } from '@/lib/docs'
+import { getAllDocs, getDocsByCategory, getRecentDocs, getIndexSyncInfo } from '@/lib/docs'
 
 import { getIndexChapters } from '@/lib/nav'
 
@@ -7,6 +7,15 @@ export default function Home() {
   const docs = getAllDocs()
   const categories = getDocsByCategory()
   const chapters = getIndexChapters()
+  const recentDocs = getRecentDocs(5)
+  const syncInfo = getIndexSyncInfo()
+
+  // Format date for display
+  const formatDate = (iso: string | null) => {
+    if (!iso) return '未知'
+    const d = new Date(iso)
+    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
 
   return (
     <div className="max-w-4xl">
@@ -14,6 +23,52 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-zinc-100 mb-4">Polymarket Knowledge Base</h1>
         <p className="text-xl text-zinc-400">顶尖理论、策略框架与风控体系</p>
         <p className="text-sm text-zinc-600 mt-3">提示：Cmd/Ctrl + K 搜索</p>
+      </section>
+
+      {/* Dashboard Stats */}
+      <section className="mb-10">
+        <h2 className="text-lg font-semibold text-zinc-300 mb-4">状态仪表盘</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-500 mb-1">文档总数</p>
+            <p className="text-2xl font-bold text-zinc-100">{docs.length}</p>
+          </div>
+          <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-500 mb-1">Index 最后更新</p>
+            <p className="text-lg font-semibold text-zinc-100">{syncInfo.lastUpdated || '未知'}</p>
+          </div>
+          <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+            <p className="text-sm text-zinc-500 mb-1">Search Index</p>
+            <p className="text-sm font-medium text-zinc-300">{formatDate(syncInfo.generatedAt)}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Updates */}
+      <section className="mb-10">
+        <h2 className="text-lg font-semibold text-zinc-300 mb-4">最近更新</h2>
+        <div className="space-y-2">
+          {recentDocs.map((doc) => (
+            <Link
+              key={doc.slug}
+              href={`/docs/${doc.slug}`}
+              className="block p-3 bg-zinc-900/60 border border-zinc-800 rounded-lg hover:bg-zinc-900 hover:border-zinc-700 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <span className="text-zinc-200 font-medium">{doc.title}</span>
+                  <span className="text-zinc-600 text-sm ml-2">{doc.category}</span>
+                </div>
+                <span className="text-xs text-zinc-500 shrink-0">
+                  {doc.mtime ? formatDate(doc.mtime) : ''}
+                </span>
+              </div>
+            </Link>
+          ))}
+          {recentDocs.length === 0 && (
+            <p className="text-zinc-500 text-sm">暂无文档</p>
+          )}
+        </div>
       </section>
 
       <section className="mb-10">
