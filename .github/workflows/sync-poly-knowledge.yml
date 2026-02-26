@@ -1,0 +1,43 @@
+name: Sync poly-knowledge
+
+on:
+  workflow_dispatch:
+  schedule:
+    # every 2 hours
+    - cron: '0 */2 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kb site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout polymark-task (source)
+        uses: actions/checkout@v4
+        with:
+          repository: feixingxuerong/polymark-task
+          path: source
+
+      - name: Sync files
+        run: |
+          rm -rf content/poly-knowledge
+          mkdir -p content/poly-knowledge
+          cp -r source/poly-knowledge/. content/poly-knowledge/
+
+      - name: Commit changes (if any)
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/poly-knowledge
+          git commit -m "chore(sync): update poly-knowledge"
+          git push
