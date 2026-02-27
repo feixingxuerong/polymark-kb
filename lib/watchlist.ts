@@ -204,17 +204,33 @@ export function getLatestWatchlistItems(limit: number = 20): WatchlistItem[] {
 
 /**
  * Get weather/aviation actionable items (action = consider/track)
+ * Fallback: if no actionable items, return top weather/aviation items with warning
  */
 export function getWeatherActionItems(limit: number = 5): WatchlistItem[] {
   const data = getLatestWatchlist()
   if (!data) return []
 
+  // First try to get actionable items (consider/track)
   const weatherAviationItems = data.items.filter(item => {
     const category = detectCategory(item)
     return (category === 'weather' || category === 'aviation') && isActionable(item)
   })
 
-  return weatherAviationItems
+  // If we have actionable items, return them
+  if (weatherAviationItems.length > 0) {
+    return weatherAviationItems
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+  }
+
+  // Fallback: if no actionable items, get all weather/aviation items
+  // This handles the case where all weather items have action="跳过/观察"
+  const allWeatherAviationItems = data.items.filter(item => {
+    const category = detectCategory(item)
+    return category === 'weather' || category === 'aviation'
+  })
+
+  return allWeatherAviationItems
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
 }
