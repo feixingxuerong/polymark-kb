@@ -20,8 +20,8 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-4xl">
-      <section className="mb-12">
+    <div className="max-w-4xl pb-8">
+      <section className="mb-8 md:mb-12">
         <h1 className="text-4xl font-bold text-zinc-100 mb-4">Polymarket Knowledge Base</h1>
         <p className="text-xl text-zinc-400">顶尖理论、策略框架与风控体系</p>
         <p className="text-sm text-zinc-600 mt-3">提示：Cmd/Ctrl + K 搜索</p>
@@ -30,7 +30,7 @@ export default function Home() {
       {/* Dashboard Stats */}
       <section className="mb-10">
         <h2 className="text-lg font-semibold text-zinc-300 mb-4">状态仪表盘</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
             <p className="text-sm text-zinc-500 mb-1">文档总数</p>
             <p className="text-2xl font-bold text-zinc-100">{docs.length}</p>
@@ -98,7 +98,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {watchlistItems.slice(0, 12).map((item, idx) => (
                 <WatchlistCard key={idx} item={item} />
               ))}
@@ -178,7 +178,7 @@ export default function Home() {
         {Object.entries(categories).map(([category, categoryDocs]) => (
           <div key={category} className="mb-6">
             <h3 className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-2">{category}</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {categoryDocs.map((doc) => (
                 <Link
                   key={doc.slug}

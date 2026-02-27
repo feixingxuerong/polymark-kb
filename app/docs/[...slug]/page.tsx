@@ -37,7 +37,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
     <article className="max-w-3xl">
       {/* Metadata Header */}
       <div className="mb-6 pb-4 border-b border-zinc-800">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
           {doc.category && (
             <span className="px-2 py-0.5 bg-zinc-800/50 text-zinc-400 rounded">
               {doc.category}
