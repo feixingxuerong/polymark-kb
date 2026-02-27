@@ -8,41 +8,90 @@ import { formatTimeShort } from '@/lib/time'
 // =====================
 // 行动清单卡片组件
 // =====================
-function ActionItemCard({ item, rank }: { item: WatchlistItem; rank: number }) {
+interface ActionItemCardProps {
+  item: WatchlistItem
+  rank: number
+  stations?: string[] // 可选的 ICAO 站点数组
+}
+
+function ActionItemCard({ item, rank, stations = [] }: ActionItemCardProps) {
   // 评分徽章颜色
   const scoreColor = item.score >= 70 ? 'bg-green-500/20 text-green-400' 
     : item.score >= 50 ? 'bg-yellow-500/20 text-yellow-400' 
     : 'bg-zinc-700/20 text-zinc-400'
 
+  // 取第一个 ICAO 用于锚点，无则链接到页面顶部
+  const firstICAO = stations.length > 0 ? stations[0] : null
+  const sourceLink = firstICAO 
+    ? `/sources/weather-aviation/latest#${firstICAO}` 
+    : '/sources/weather-aviation/latest'
+
   return (
-    <Link
-      href="/watchlist/latest"
-      className="block p-3 bg-zinc-900/80 border border-zinc-800 rounded-xl hover:bg-zinc-900 hover:border-blue-500/50 transition-all group"
-    >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <span className={`text-xs px-1.5 py-0.5 rounded ${scoreColor}`}>
-          #{rank} {item.score?.toFixed(0)}
-        </span>
-        {item.days_to_event != null && (
-          <span className="text-xs text-zinc-500 shrink-0">
-            {item.days_to_event < 1 
-              ? `${Math.round(item.days_to_event * 24)}h` 
-              : `${item.days_to_event.toFixed(0)}天`}
+    <div className="flex flex-col gap-1.5">
+      {/* 主卡片：链接到观察清单 */}
+      <Link
+        href="/watchlist/latest"
+        className="block p-3 bg-zinc-900/80 border border-zinc-800 rounded-xl hover:bg-zinc-900 hover:border-blue-500/50 transition-all group"
+      >
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <span className={`text-xs px-1.5 py-0.5 rounded ${scoreColor}`}>
+            #{rank} {item.score?.toFixed(0)}
           </span>
+          {item.days_to_event != null && (
+            <span className="text-xs text-zinc-500 shrink-0">
+              {item.days_to_event < 1 
+                ? `${Math.round(item.days_to_event * 24)}h` 
+                : `${item.days_to_event.toFixed(0)}天`}
+            </span>
+          )}
+        </div>
+        <p className="text-zinc-200 text-sm font-medium line-clamp-2 group-hover:text-blue-300 transition-colors">
+          {item.question}
+        </p>
+        {item.reason && (
+          <p className="text-zinc-500 text-xs mt-1 line-clamp-1">{item.reason}</p>
+        )}
+      </Link>
+
+      {/* 快捷链接行 */}
+      <div className="flex items-center gap-2 px-1">
+        {/* 异动雷达 */}
+        <Link
+          href="/watchlist/diff/latest"
+          className="text-[10px] text-yellow-400 hover:text-yellow-300 transition-colors flex items-center gap-1"
+        >
+          <span className="text-[8px]">📡</span>
+          <span className="hidden xs:inline">异动</span>
+        </Link>
+        
+        <span className="text-zinc-700">|</span>
+        
+        {/* 数据源链接 */}
+        <Link
+          href={sourceLink}
+          className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"
+        >
+          <span className="text-[8px]">🔗</span>
+          <span className="hidden xs:inline">数据源</span>
+        </Link>
+
+        {/* 市场外链 */}
+        {item.url && (
+          <>
+            <span className="text-zinc-700">|</span>
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+            >
+              <span className="text-[8px]">📊</span>
+              <span className="hidden xs:inline">市场</span>
+            </a>
+          </>
         )}
       </div>
-      <p className="text-zinc-200 text-sm font-medium line-clamp-2 group-hover:text-blue-300 transition-colors">
-        {item.question}
-      </p>
-      {item.reason && (
-        <p className="text-zinc-500 text-xs mt-1 line-clamp-1">{item.reason}</p>
-      )}
-      {item.url && (
-        <div className="mt-2 pt-2 border-t border-zinc-800">
-          <span className="text-xs text-blue-400">查看市场 →</span>
-        </div>
-      )}
-    </Link>
+    </div>
   )
 }
 

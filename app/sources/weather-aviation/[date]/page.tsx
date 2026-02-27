@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getWeatherAviationByDate, getAllWeatherAviationFiles, getUniqueSourceTypes } from '@/lib/weatherAviationSources'
 import { SourceCard } from '@/components/SourceCard'
+import { HashScrollHandler } from '@/components/HashScrollHandler'
 
 export const dynamic = 'force-static'
 
@@ -49,47 +50,50 @@ export default async function DateWeatherAviationPage({ params }: PageProps) {
   const sourceTypes = getUniqueSourceTypes(data.sources)
 
   return (
-    <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-zinc-100">气象航空数据源 {date}</h1>
-          <p className="text-zinc-400 mt-1">
-            {data.sources.length} 个数据源
-          </p>
+    <>
+      <HashScrollHandler />
+      <div className="max-w-4xl">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-zinc-100">气象航空数据源 {date}</h1>
+            <p className="text-zinc-400 mt-1">
+              {data.sources.length} 个数据源
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <Link
+              href="/sources/weather-aviation/latest"
+              className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              最新 →
+            </Link>
+            <Link
+              href="/"
+              className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              ← 首页
+            </Link>
+          </div>
         </div>
-        <div className="flex gap-4">
-          <Link
-            href="/sources/weather-aviation/latest"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            最新 →
-          </Link>
-          <Link
-            href="/"
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            ← 首页
-          </Link>
+
+        {/* 数据源类型概览 */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          {sourceTypes.map((type) => {
+            const count = data.sources.filter(s => s.source_type === type).length
+            return (
+              <span key={type} className="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 rounded">
+                {type}: {count}
+              </span>
+            )
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {data.sources.map((source, idx) => (
+            <SourceCard key={idx} source={source} />
+          ))}
         </div>
       </div>
-
-      {/* 数据源类型概览 */}
-      <div className="mb-6 flex flex-wrap gap-2">
-        {sourceTypes.map((type) => {
-          const count = data.sources.filter(s => s.source_type === type).length
-          return (
-            <span key={type} className="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 rounded">
-              {type}: {count}
-            </span>
-          )
-        })}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.sources.map((source, idx) => (
-          <SourceCard key={idx} source={source} />
-        ))}
-      </div>
-    </div>
+    </>
   )
 }

@@ -43,8 +43,14 @@ function getSourceTypeLabel(type: string): string {
 }
 
 export function SourceCard({ source }: SourceCardProps) {
+  // 生成唯一的 id 用于 URL hash 跳转（优先使用 ICAO）
+  const anchorId = source.icao || source.station_id || source.iata || ''
+
   const cardContent = (
-    <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-zinc-700 hover:bg-zinc-800/50 transition-all cursor-pointer h-full flex flex-col">
+    <div 
+      id={anchorId}
+      className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-zinc-700 hover:bg-zinc-800/50 transition-all cursor-pointer h-full flex flex-col"
+    >
       {/* 站点名称 */}
       <div className="mb-2">
         <h3 className="text-zinc-100 font-medium text-sm leading-tight">
