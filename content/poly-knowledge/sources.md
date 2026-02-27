@@ -305,6 +305,8 @@
 |---|------|------|--------|
 | 12 | **Settlement Rules** | 结算条件、延迟处理 | 高 |
 | 13 | **Help Center** | 常见问题、争议流程 | 中 |
+| 50 | **Order Lifecycle** | 订单匹配、链上结算流程 | 高 |
+| 51 | **结算机制详解** | 完整的结算、争议、延迟场景文档 | 高 |
 
 #### 12. Settlement & Resolutions
 
@@ -318,12 +320,32 @@
 
 #### 13. Help Center / FAQ
 
-- **URL**: https://polymarket.com/help
+- **URL**: https://help.polymarket.com
 - **类型**: 帮助文档
 - **用途**: 用户常见问题、账户问题
 - **可信度**: 中
 - **更新频率**: 每周
 - **备注**: 补充官方文档未覆盖的问题
+- **验证日期**: 2026-02-27
+
+#### 50. Order Lifecycle
+
+- **URL**: https://docs.polymarket.com/concepts/order-lifecycle.md
+- **类型**: 官方文档
+- **用途**: 理解订单匹配、链上结算流程、交易状态
+- **可信度**: 高
+- **更新频率**: 低
+- **备注**: 包含 MATCHED → MINED → CONFIRMED 状态流转
+- **验证日期**: 2026-02-27
+
+#### 51. Polymarket 结算机制详解 (本地笔记)
+
+- **URL**: `poly-knowledge/notes/polymarket-settlement.md`
+- **类型**: 本地技术笔记
+- **用途**: 完整的结算流程、争议处理 (MIC)、延迟结算场景
+- **可信度**: 高
+- **更新频率**: 按需
+- **备注**: 基于官方文档和 API 分析整理
 - **验证日期**: 2026-02-27
 
 ---
@@ -509,6 +531,46 @@
 
 ---
 
+## 预测市场理论与行为金融
+
+| # | 来源 | 用途 | 可信度 |
+|---|------|------|--------|
+| 60 | **Prediction Market (Wikipedia)** | 预测市场基础概念、历史发展 | 中 |
+| 61 | **"The Wisdom of Crowds"** - James Surowiecki | 群体智慧理论框架 | 高 |
+| 62 | **"The Use of Knowledge in Society"** - Hayek | 价格作为信息聚合机制 | 高 |
+
+#### 60. Prediction Market (Wikipedia)
+
+- **URL**: https://en.wikipedia.org/wiki/Prediction_market
+- **类型**: 百科全书
+- **用途**: 预测市场基础概念、历史发展、信息效率理论基础
+- **可信度**: 中
+- **更新频率**: 低
+- **备注**: 包含 Iowa Electronic Markets、Intrade、Augur 等历史脉络
+- **验证日期**: 2026-02-27
+
+#### 61. "The Wisdom of Crowds" - James Surowiecki
+
+- **URL**: https://en.wikipedia.org/wiki/The_Wisdom_of_the_Crowds
+- **类型**: 书籍
+- **用途**: 理解群体预测优于个体的条件与机制
+- **可信度**: 高
+- **更新频率**: 不频繁
+- **备注**: 预测市场的核心理论基础之一
+- **验证日期**: 2026-02-27
+
+#### 62. "The Use of Knowledge in Society" - Friedrich Hayek
+
+- **URL**: https://en.wikipedia.org/wiki/The_Use_of_Knowledge_in_Society
+- **类型**: 经典论文
+- **用途**: 理解市场价格作为信息聚合机制的理论基础
+- **可信度**: 高
+- **更新频率**: 不频繁
+- **备注**: 1945 年经典论文，经济学必读
+- **验证日期**: 2026-02-27
+
+---
+
 ## 来源更新优先级
 
 ### 当前优先补充
@@ -541,3 +603,17 @@
 - 新增天气数据源 (40-45): NOAA/NCEI, ECMWF, GFS, Open-Meteo, Meteostat, NWS
 - 标记待获取来源 (策略书籍、社区)
 - 更新人: Subagent-Weather-Research (kb)
+
+### 2026-02-27 (流动性分析)
+
+- 新增流动性分析来源：
+  - Markets API (流动性/成交量筛选参数)
+  - Order Book API (订单簿深度、点差计算)
+  - Fee Rate API (交易费率)
+- 更新人: Subagent-Poly-Liquidity
+
+### 2026-02-27
+
+- 新增预测市场理论与行为金融来源 (60-62)
+- 新增来源: Wikipedia, The Wisdom of Crowds, Hayek 经典论文
+- 更新人: Subagent-Poly-Odds-Psych
