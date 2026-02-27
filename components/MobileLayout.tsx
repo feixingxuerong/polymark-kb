@@ -113,8 +113,8 @@ export function MobileLayout({
         </>
       )}
 
-      {/* Main content area - with tap hint when drawer is open */}
-      <div className="md:hidden">
+      {/* Main content area */}
+      <div className="flex-1">
         {children}
       </div>
     </>
