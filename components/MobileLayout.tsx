@@ -20,7 +20,7 @@ export function MobileLayout({
   categories: Record<string, any[]>
   chapters: any[]
 }) {
-  const [drawerOpen, setDrawerOpen] = useState(true) // Default open (navigation-first)
+  const [drawerOpen, setDrawerOpen] = useState(false) // Default closed (immersive reading first)
 
   return (
     <>
