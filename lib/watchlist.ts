@@ -3,6 +3,7 @@ import path from 'path'
 
 const OUTPUTS_DIR = path.join(process.cwd(), 'content/poly-knowledge/outputs')
 
+// Extended watchlist item with optional fields
 export interface WatchlistItem {
   question: string
   score: number
@@ -12,6 +13,13 @@ export interface WatchlistItem {
   reason: string
   market_id?: string
   url?: string
+  // Extended fields from task pipeline
+  category?: string
+  action?: string
+  entry_plan?: string
+  thesis?: string
+  monitor_sources?: string[]
+  key_risks?: string[]
 }
 
 export interface WatchlistData {
@@ -20,6 +28,60 @@ export interface WatchlistData {
   generated_at?: string
   markets?: WatchlistItem[]
   watchlist?: (WatchlistItem & { rank?: number })[]
+}
+
+// Category detection keywords
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  'weather': ['weather', 'snow', 'rain', 'temperature', 'storm', 'hurricane', 'wind', 'fog', 'precipitation', '天气', '降雪', '降雨', '温度', '风暴'],
+  'aviation': ['flight', 'airline', 'airport', 'pilot', 'aviation', 'delay', '取消', '航班', '机场', '飞行员'],
+  'macro': ['gdp', 'inflation', 'unemployment', 'interest rate', 'fed', 'recession', 'gdp', 'cpi', 'pce', '宏观', 'gdp', '通胀', '失业率'],
+  'political': ['election', 'trump', 'biden', 'congress', 'senate', 'president', 'vote', 'policy', '选举', '总统', '国会', '投票'],
+  'crypto': ['bitcoin', 'btc', 'ethereum', 'eth', 'solana', 'sol', 'crypto', '加密', '币'],
+  'sports': ['nba', 'nfl', 'mlb', 'nhl', 'soccer', 'football', 'tennis', 'game', 'match', 'score', 'win', '联赛', '比赛', '得分'],
+}
+
+// Detect category from question/description if not provided
+export function detectCategory(item: WatchlistItem): string {
+  // Use existing category if available
+  if (item.category && item.category !== 'unknown') {
+    return item.category
+  }
+
+  const text = `${item.question} ${item.reason}`.toLowerCase()
+
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const keyword of keywords) {
+      if (text.includes(keyword.toLowerCase())) {
+        return category
+      }
+    }
+  }
+
+  return 'other'
+}
+
+// Get all available categories
+export type FilterCategory = 'all' | 'weather' | 'aviation' | 'macro' | 'political' | 'crypto' | 'sports' | 'other'
+
+export const FILTER_CATEGORIES: FilterCategory[] = ['all', 'weather', 'aviation', 'macro', 'political', 'crypto', 'sports', 'other']
+
+// Category display names in Chinese
+export const CATEGORY_LABELS: Record<FilterCategory, string> = {
+  'all': '全部',
+  'weather': '天气',
+  'aviation': '航空',
+  'macro': '宏观',
+  'political': '政治',
+  'crypto': 'Crypto',
+  'sports': '体育',
+  'other': '其它',
+}
+
+// Check if action is "consider" or "tracking"
+export function isActionable(item: WatchlistItem): boolean {
+  if (!item.action) return false
+  const action = item.action.toLowerCase()
+  return action.includes('考虑') || action.includes('跟踪') || action.includes('tracking') || action.includes('consider')
 }
 
 function normalizeWatchlistData(date: string, data: WatchlistData): { date: string; generatedAt: string; items: WatchlistItem[] } {
@@ -43,6 +105,12 @@ function normalizeWatchlistData(date: string, data: WatchlistData): { date: stri
       liquidity: Number.isFinite(liqVal as any) ? (liqVal as number) : null,
       days_to_event: Number.isFinite(daysVal as any) ? (daysVal as number) : null,
       reason: it.reason || '',
+      category: it.category,
+      action: it.action,
+      entry_plan: it.entry_plan,
+      thesis: it.thesis,
+      monitor_sources: it.monitor_sources,
+      key_risks: it.key_risks,
     } as WatchlistItem
   })
   return { date, generatedAt, items }
@@ -132,4 +200,38 @@ export function getLatestWatchlistItems(limit: number = 20): WatchlistItem[] {
 
   const items = [...data.items].sort((a, b) => b.score - a.score)
   return items.slice(0, limit)
+}
+
+/**
+ * Get weather/aviation actionable items (action = consider/track)
+ */
+export function getWeatherActionItems(limit: number = 5): WatchlistItem[] {
+  const data = getLatestWatchlist()
+  if (!data) return []
+
+  const weatherAviationItems = data.items.filter(item => {
+    const category = detectCategory(item)
+    return (category === 'weather' || category === 'aviation') && isActionable(item)
+  })
+
+  return weatherAviationItems
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+}
+
+/**
+ * Get items filtered by category
+ */
+export function getFilteredWatchlistItems(category: FilterCategory, limit?: number): WatchlistItem[] {
+  const data = getLatestWatchlist()
+  if (!data) return []
+
+  let items = data.items
+
+  if (category !== 'all') {
+    items = items.filter(item => detectCategory(item) === category)
+  }
+
+  items = [...items].sort((a, b) => b.score - a.score)
+  return limit ? items.slice(0, limit) : items
 }
