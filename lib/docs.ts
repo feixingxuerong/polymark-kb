@@ -209,16 +209,55 @@ export function getIndexSyncInfo(): { lastUpdated: string | null; generatedAt: s
   let lastUpdated: string | null = null
   let generatedAt: string | null = null
 
-  // Parse index.md for "Last updated" line
+  // 1) Primary: Use fs.statSync to get file modification time
   if (fs.existsSync(indexPath)) {
-    const raw = fs.readFileSync(indexPath, 'utf8')
-    const match = raw.match(/Last updated[:\s]*(\d{4}[年/-]\d{2}[月/-]\d{2})/i)
-    if (match) {
-      lastUpdated = match[1].replace(/年/g, '-').replace(/月/g, '-').replace(/日/g, '')
+    try {
+      const stats = fs.statSync(indexPath)
+      lastUpdated = stats.mtime.toISOString()
+    } catch {
+      // Fall through to other methods
     }
   }
 
-  // Read search-index.json generatedAt
+  // 2) Fallback: If mtime didn't work, try parsing index.md content for "Last updated" line
+  // Support multiple formats: "Last updated: 2024年12月25日", "Last updated: 2024-12-25", "Last updated: 2024/12/25"
+  if (!lastUpdated && fs.existsSync(indexPath)) {
+    try {
+      const raw = fs.readFileSync(indexPath, 'utf8')
+      // Match "Last updated" with various date formats
+      const match = raw.match(/Last updated[:\s]*(\d{4}[年/-]\d{1,2}[月/-]\d{1,2}[日]?)/i)
+      if (match) {
+        lastUpdated = match[1].replace(/年/g, '-').replace(/月/g, '-').replace(/日/g, '')
+        // Ensure ISO format
+        if (!lastUpdated.includes('T')) {
+          const parts = lastUpdated.split('-')
+          if (parts.length === 3) {
+            lastUpdated = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}T00:00:00.000Z`
+          }
+        }
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  // 3) Final fallback: Parse changelog dates (### YYYY-MM-DD) from index.md
+  if (!lastUpdated && fs.existsSync(indexPath)) {
+    try {
+      const raw = fs.readFileSync(indexPath, 'utf8')
+      // Find all changelog dates like "### 2026-02-27"
+      const dateMatches = raw.match(/^###\s+(\d{4}-\d{2}-\d{2})/gm)
+      if (dateMatches && dateMatches.length > 0) {
+        // Get the last (most recent) date
+        const lastDate = dateMatches[dateMatches.length - 1].replace('###', '').trim()
+        lastUpdated = `${lastDate}T00:00:00.000Z`
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  // Read search-index.json generatedAt (always available as fallback)
   if (fs.existsSync(searchIndexPath)) {
     try {
       const indexData = JSON.parse(fs.readFileSync(searchIndexPath, 'utf8'))
