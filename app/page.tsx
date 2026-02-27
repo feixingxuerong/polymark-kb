@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getAllDocs, getDocsByCategory, getRecentDocs, getIndexSyncInfo } from '@/lib/docs'
 import { getLatestWatchlist, getLatestWatchlistDate, getLatestWatchlistItems } from '@/lib/watchlist'
 import { WatchlistCard } from '@/components/WatchlistCard'
+import { formatTimeShort } from '@/lib/time'
 
 import { getIndexChapters } from '@/lib/nav'
 
@@ -11,13 +12,6 @@ export default function Home() {
   const chapters = getIndexChapters()
   const recentDocs = getRecentDocs(5)
   const syncInfo = getIndexSyncInfo()
-
-  // Format date for display
-  const formatDate = (iso: string | null) => {
-    if (!iso) return '未知'
-    const d = new Date(iso)
-    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-  }
 
   return (
     <div className="max-w-4xl pb-8">
@@ -37,11 +31,11 @@ export default function Home() {
           </div>
           <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
             <p className="text-sm text-zinc-500 mb-1">Index 最后更新</p>
-            <p className="text-lg font-semibold text-zinc-100">{syncInfo.lastUpdated || '未知'}</p>
+            <p className="text-lg font-semibold text-zinc-100">{formatTimeShort(syncInfo.lastUpdated)}</p>
           </div>
           <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
             <p className="text-sm text-zinc-500 mb-1">Search Index</p>
-            <p className="text-sm font-medium text-zinc-300">{formatDate(syncInfo.generatedAt)}</p>
+            <p className="text-sm font-medium text-zinc-300">{formatTimeShort(syncInfo.generatedAt)}</p>
           </div>
         </div>
       </section>
@@ -62,7 +56,7 @@ export default function Home() {
                   <span className="text-zinc-600 text-sm ml-2">{doc.category}</span>
                 </div>
                 <span className="text-xs text-zinc-500 shrink-0">
-                  {doc.mtime ? formatDate(doc.mtime) : ''}
+                  {formatTimeShort(doc.mtime)}
                 </span>
               </div>
             </Link>
