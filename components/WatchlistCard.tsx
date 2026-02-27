@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { WatchlistItem } from '@/lib/watchlist'
+import { translateWeatherQuestion } from '@/lib/translate'
 
 interface WatchlistCardProps {
   item: WatchlistItem
@@ -133,6 +134,15 @@ export function WatchlistCard({ item }: WatchlistCardProps) {
         <h3 className="text-zinc-100 font-medium text-sm leading-tight line-clamp-2">
           {extItem.question || '未知问题'}
         </h3>
+        {/* 中文翻译行 */}
+        {(() => {
+          const cn = translateWeatherQuestion(extItem.question)
+          return cn ? (
+            <p className="text-zinc-400 text-xs mt-1.5 leading-tight">
+              {cn}
+            </p>
+          ) : null
+        })()}
       </div>
 
       {/* 核心理由 */}
@@ -167,7 +177,20 @@ export function WatchlistCard({ item }: WatchlistCardProps) {
     </div>
   )
 
-  // Link to market URL if available
+  // Link to detail page if we have a slug, otherwise use external URL
+  const detailSlug = extItem.slug || extItem.market_id
+  if (detailSlug) {
+    return (
+      <Link
+        href={`/market/${detailSlug}`}
+        className="block"
+      >
+        {cardContent}
+      </Link>
+    )
+  }
+
+  // Fallback to external Polymarket URL
   if (extItem.url) {
     return (
       <a

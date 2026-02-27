@@ -13,6 +13,11 @@ export interface WatchlistItem {
   reason: string
   market_id?: string
   url?: string
+  slug?: string
+  endDate?: string
+  end_date?: string
+  negRisk?: boolean
+  weather_signal_score?: number
   // Extended fields from task pipeline
   category?: string
   action?: string
@@ -111,6 +116,10 @@ function normalizeWatchlistData(date: string, data: WatchlistData): { date: stri
       thesis: it.thesis,
       monitor_sources: it.monitor_sources,
       key_risks: it.key_risks,
+      slug: it.slug,
+      endDate: it.endDate || it.end_date,
+      negRisk: it.negRisk,
+      weather_signal_score: it.weather_signal_score,
     } as WatchlistItem
   })
   return { date, generatedAt, items }
