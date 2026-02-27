@@ -26,6 +26,45 @@ export interface WeatherAviationSourcesData {
   date?: string
   generatedAt?: string
   generated_at?: string
+  // 新 schema：来自 polymark-task scripts/generate-weather-aviation-sources.mjs
+  data?: {
+    weather?: {
+      generatedAt?: string
+      stations?: Array<{
+        station?: {
+          id?: string
+          name?: string
+          coordinates?: { lat?: number; lon?: number }
+          grid?: {
+            gridId?: string
+            gridX?: number
+            gridY?: number
+            forecastUrl?: string
+            forecastHourlyUrl?: string
+            cwa?: string
+          }
+        }
+      }>
+    }
+    aviation?: {
+      generatedAt?: string
+      airports?: Array<{
+        airport?: {
+          icao?: string
+          iata?: string
+          name?: string
+          city?: string
+          coordinates?: { lat?: number; lon?: number }
+        }
+        metar?: {
+          observationTime?: string
+          flightCategory?: string
+        }
+        taf?: any
+      }>
+    }
+  }
+  // 旧 schema（兼容）
   sources?: AviationSource[]
 }
 
@@ -77,9 +116,61 @@ export function getWeatherAviationByDate(date: string): { date: string; generate
   try {
     const raw = fs.readFileSync(filePath, 'utf-8')
     const data = JSON.parse(raw) as WeatherAviationSourcesData
-    const generatedAt = data.generatedAt || data.generated_at || new Date().toISOString()
-    const sources = data.sources || []
-    return { date, generatedAt, sources }
+
+    const generatedAt =
+      data.data?.aviation?.generatedAt ||
+      data.data?.weather?.generatedAt ||
+      data.generatedAt ||
+      data.generated_at ||
+      new Date().toISOString()
+
+    // 新 schema → 统一映射成 AviationSource[]（供 UI 复用）
+    const mapped: AviationSource[] = []
+
+    const weatherStations = data.data?.weather?.stations || []
+    for (const s of weatherStations) {
+      const st = s.station
+      if (!st?.id) continue
+      mapped.push({
+        station_id: st.id,
+        station_name: st.name || st.id,
+        latitude: st.coordinates?.lat,
+        longitude: st.coordinates?.lon,
+        country: 'US',
+        region: st.grid?.cwa,
+        source_type: 'forecast',
+        update_frequency: '约每小时',
+        api_url: st.grid?.forecastUrl,
+        coverage: st.grid?.gridId ? `${st.grid.gridId} ${st.grid.gridX},${st.grid.gridY}` : undefined,
+        notes: 'NWS 网格预报（forecast）',
+      })
+    }
+
+    const aviationAirports = data.data?.aviation?.airports || []
+    for (const a of aviationAirports) {
+      const ap = a.airport
+      if (!ap?.icao) continue
+      mapped.push({
+        station_id: ap.icao,
+        station_name: ap.name || ap.icao,
+        icao: ap.icao,
+        iata: ap.iata,
+        latitude: ap.coordinates?.lat,
+        longitude: ap.coordinates?.lon,
+        country: 'US',
+        region: ap.city,
+        source_type: 'metar',
+        update_frequency: '约每小时',
+        notes: a.metar?.observationTime ? `METAR 观测时间: ${a.metar.observationTime}` : 'METAR（机场实况）',
+      })
+    }
+
+    // 旧 schema 兼容
+    const sources = (data.sources && Array.isArray(data.sources) ? data.sources : [])
+
+    const finalSources = mapped.length > 0 ? mapped : sources
+
+    return { date, generatedAt, sources: finalSources }
   } catch (error) {
     console.error(`Error parsing weather-aviation-sources ${date}:`, error)
     return null
