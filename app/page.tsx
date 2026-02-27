@@ -194,7 +194,7 @@ export default function Home() {
 
       {/* Quick Links - Top row */}
       <section className="mb-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           <Link
             href="/docs/index"
             className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-colors"
@@ -222,6 +222,13 @@ export default function Home() {
           >
             <h3 className="font-semibold text-yellow-400 mb-1">📡 异动雷达</h3>
             <p className="text-sm text-zinc-500">每日变化</p>
+          </Link>
+          <Link
+            href="/weather/today"
+            className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-cyan-700 transition-colors"
+          >
+            <h3 className="font-semibold text-cyan-400 mb-1">🌀 今日天气</h3>
+            <p className="text-sm text-zinc-500">行动+异动+源</p>
           </Link>
         </div>
       </section>
