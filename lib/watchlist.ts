@@ -6,9 +6,9 @@ const OUTPUTS_DIR = path.join(process.cwd(), 'content/poly-knowledge/outputs')
 export interface WatchlistItem {
   question: string
   score: number
-  spread_pct: number
-  liquidity: number
-  days_to_event: number
+  spread_pct: number | null
+  liquidity: number | null
+  days_to_event: number | null
   reason: string
   market_id?: string
   url?: string
@@ -24,15 +24,27 @@ export interface WatchlistData {
 
 function normalizeWatchlistData(date: string, data: WatchlistData): { date: string; generatedAt: string; items: WatchlistItem[] } {
   const generatedAt = data.generatedAt || data.generated_at || new Date().toISOString()
-  const items = (data.markets || data.watchlist || []).map((it) => ({
-    ...it,
-    // ensure numbers
-    score: typeof it.score === 'number' ? it.score : Number(it.score ?? 0),
-    spread_pct: typeof it.spread_pct === 'number' ? it.spread_pct : Number(it.spread_pct ?? 0),
-    liquidity: typeof it.liquidity === 'number' ? it.liquidity : Number(it.liquidity ?? 0),
-    days_to_event: typeof it.days_to_event === 'number' ? it.days_to_event : Number(it.days_to_event ?? 0),
-    reason: it.reason || '',
-  }))
+  const items = (data.markets || data.watchlist || []).map((it: any) => {
+    const scoreVal =
+      typeof it.score === 'number'
+        ? it.score
+        : typeof it.scores?.total === 'number'
+          ? it.scores.total
+          : Number(it.score ?? 0)
+
+    const spreadVal = typeof it.spread_pct === 'number' ? it.spread_pct : it.spread_pct == null ? null : Number(it.spread_pct)
+    const liqVal = typeof it.liquidity === 'number' ? it.liquidity : it.liquidity == null ? null : Number(it.liquidity)
+    const daysVal = typeof it.days_to_event === 'number' ? it.days_to_event : it.days_to_event == null ? null : Number(it.days_to_event)
+
+    return {
+      ...it,
+      score: Number.isFinite(scoreVal) ? scoreVal : 0,
+      spread_pct: Number.isFinite(spreadVal as any) ? (spreadVal as number) : null,
+      liquidity: Number.isFinite(liqVal as any) ? (liqVal as number) : null,
+      days_to_event: Number.isFinite(daysVal as any) ? (daysVal as number) : null,
+      reason: it.reason || '',
+    } as WatchlistItem
+  })
   return { date, generatedAt, items }
 }
 

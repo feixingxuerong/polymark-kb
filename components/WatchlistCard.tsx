@@ -5,11 +5,10 @@ interface WatchlistCardProps {
   item: WatchlistItem
 }
 
-function formatLiquidity(value: number): string {
-  if (value >= 1000) {
-    return `$${(value / 1000).toFixed(1)}k`
-  }
-  return `$${value}`
+function formatLiquidity(value: number | null): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  if (value >= 1000) return `$${(value / 1000).toFixed(1)}k`
+  return `$${value.toFixed(0)}`
 }
 
 function formatScore(score: number): { label: string; color: string } {
@@ -29,7 +28,7 @@ export function WatchlistCard({ item }: WatchlistCardProps) {
           {item.question}
         </h3>
         <div className="shrink-0">
-          <span className={`text-lg font-bold ${scoreColor}`}>{item.score.toFixed(1)}</span>
+          <span className={`text-lg font-bold ${scoreColor}`}>{Number.isFinite(item.score) ? item.score.toFixed(1) : '—'}</span>
         </div>
       </div>
 
@@ -37,10 +36,14 @@ export function WatchlistCard({ item }: WatchlistCardProps) {
       <p className="text-zinc-400 text-xs mb-3 line-clamp-2">{item.reason}</p>
 
       {/* Stats */}
-      <div className="flex items-center gap-3 text-xs text-zinc-500">
-        <span>Spread: {item.spread_pct}%</span>
+      <div className="flex items-center gap-3 text-xs text-zinc-500 flex-wrap">
+        <span>
+          Spread: {item.spread_pct == null ? '—' : `${item.spread_pct.toFixed(1)}%`}
+        </span>
         <span>Liqq: {formatLiquidity(item.liquidity)}</span>
-        <span>{item.days_to_event}d left</span>
+        <span>
+          {item.days_to_event == null ? '—' : `${Math.max(0, item.days_to_event).toFixed(0)}d`} left
+        </span>
       </div>
 
       {/* Score Label */}
