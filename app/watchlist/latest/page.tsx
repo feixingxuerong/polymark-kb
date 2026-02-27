@@ -27,7 +27,7 @@ export default function LatestWatchlistPage() {
         <div>
           <h1 className="text-3xl font-bold text-zinc-100">Latest Watchlist</h1>
           <p className="text-zinc-400 mt-1">
-            {watchlist.markets.length} markets · {latestDate}
+            {watchlist.items.length} markets · {latestDate}
           </p>
         </div>
         <Link

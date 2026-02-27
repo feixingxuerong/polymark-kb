@@ -53,7 +53,7 @@ export default async function DateWatchlistPage({ params }: PageProps) {
         <div>
           <h1 className="text-3xl font-bold text-zinc-100">Watchlist {date}</h1>
           <p className="text-zinc-400 mt-1">
-            {watchlist.markets.length} markets
+            {watchlist.items.length} markets
           </p>
         </div>
         <div className="flex gap-4">

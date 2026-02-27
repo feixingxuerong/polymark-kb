@@ -15,9 +15,25 @@ export interface WatchlistItem {
 }
 
 export interface WatchlistData {
-  date: string
-  generatedAt: string
-  markets: WatchlistItem[]
+  date?: string
+  generatedAt?: string
+  generated_at?: string
+  markets?: WatchlistItem[]
+  watchlist?: (WatchlistItem & { rank?: number })[]
+}
+
+function normalizeWatchlistData(date: string, data: WatchlistData): { date: string; generatedAt: string; items: WatchlistItem[] } {
+  const generatedAt = data.generatedAt || data.generated_at || new Date().toISOString()
+  const items = (data.markets || data.watchlist || []).map((it) => ({
+    ...it,
+    // ensure numbers
+    score: typeof it.score === 'number' ? it.score : Number(it.score ?? 0),
+    spread_pct: typeof it.spread_pct === 'number' ? it.spread_pct : Number(it.spread_pct ?? 0),
+    liquidity: typeof it.liquidity === 'number' ? it.liquidity : Number(it.liquidity ?? 0),
+    days_to_event: typeof it.days_to_event === 'number' ? it.days_to_event : Number(it.days_to_event ?? 0),
+    reason: it.reason || '',
+  }))
+  return { date, generatedAt, items }
 }
 
 /**
@@ -60,17 +76,15 @@ export function getLatestWatchlistDate(): string | null {
 /**
  * Read and parse a watchlist file by date.
  */
-export function getWatchlistByDate(date: string): WatchlistData | null {
+export function getWatchlistByDate(date: string): { date: string; generatedAt: string; items: WatchlistItem[] } | null {
   const filePath = path.join(OUTPUTS_DIR, `watchlist-${date}.json`)
 
-  if (!fs.existsSync(filePath)) {
-    return null
-  }
+  if (!fs.existsSync(filePath)) return null
 
   try {
     const raw = fs.readFileSync(filePath, 'utf-8')
     const data = JSON.parse(raw) as WatchlistData
-    return data
+    return normalizeWatchlistData(date, data)
   } catch (error) {
     console.error(`Error parsing watchlist ${date}:`, error)
     return null
@@ -80,7 +94,7 @@ export function getWatchlistByDate(date: string): WatchlistData | null {
 /**
  * Get the latest watchlist data.
  */
-export function getLatestWatchlist(): WatchlistData | null {
+export function getLatestWatchlist(): { date: string; generatedAt: string; items: WatchlistItem[] } | null {
   const latestDate = getLatestWatchlistDate()
   if (!latestDate) return null
   return getWatchlistByDate(latestDate)
@@ -93,7 +107,7 @@ export function getWatchlistItems(date: string, limit?: number): WatchlistItem[]
   const data = getWatchlistByDate(date)
   if (!data) return []
 
-  const items = data.markets.sort((a, b) => b.score - a.score)
+  const items = [...data.items].sort((a, b) => b.score - a.score)
   return limit ? items.slice(0, limit) : items
 }
 
@@ -104,6 +118,6 @@ export function getLatestWatchlistItems(limit: number = 20): WatchlistItem[] {
   const data = getLatestWatchlist()
   if (!data) return []
 
-  const items = data.markets.sort((a, b) => b.score - a.score)
+  const items = [...data.items].sort((a, b) => b.score - a.score)
   return items.slice(0, limit)
 }
