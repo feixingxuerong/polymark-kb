@@ -387,6 +387,91 @@ export default async function MarketDetailPage({ params }: PageProps) {
         </div>
       )}
 
+      {/* P1: Probability Calculation Card (Issue #15) */}
+      {item.assistant_prob != null || item.assistant_evidence ? (
+        <div className="mt-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+          <div className="text-xs text-zinc-500 mb-3">概率计算 (assistant_prob)</div>
+          
+          {/* Probability */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="p-3 bg-zinc-800/50 rounded-lg">
+              <div className="text-xs text-zinc-500 mb-1">概率</div>
+              <div className="text-zinc-200 text-lg font-semibold">
+                {item.assistant_prob != null ? `${(item.assistant_prob * 100).toFixed(1)}%` : '—'}
+              </div>
+            </div>
+            
+            {/* Threshold */}
+            <div className="p-3 bg-zinc-800/50 rounded-lg">
+              <div className="text-xs text-zinc-500 mb-1">阈值</div>
+              <div className="text-zinc-200">
+                {item.assistant_evidence?.threshold != null ? `${item.assistant_evidence.threshold}°` : '—'}
+              </div>
+            </div>
+            
+            {/* Predicted Max Temp */}
+            <div className="p-3 bg-zinc-800/50 rounded-lg">
+              <div className="text-xs text-zinc-500 mb-1">预测最高温</div>
+              <div className="text-zinc-200">
+                {item.assistant_evidence?.predicted_max != null ? `${item.assistant_evidence.predicted_max}°` : '—'}
+              </div>
+            </div>
+            
+            {/* Sigma */}
+            <div className="p-3 bg-zinc-800/50 rounded-lg">
+              <div className="text-xs text-zinc-500 mb-1">Sigma</div>
+              <div className="text-zinc-200">
+                {item.assistant_evidence?.sigma != null ? `±${item.assistant_evidence.sigma.toFixed(2)}` : '—'}
+              </div>
+            </div>
+          </div>
+          
+          {/* Additional Info */}
+          <div className="space-y-2 text-sm">
+            {/* Station */}
+            {item.assistant_evidence?.station && (
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500">站点:</span>
+                <span className="text-zinc-300">{item.assistant_evidence.station}</span>
+              </div>
+            )}
+            
+            {/* Data Update Time */}
+            {item.assistant_evidence?.updated_at && (
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500">数据更新时间:</span>
+                <span className="text-zinc-300">
+                  {new Date(item.assistant_evidence.updated_at).toLocaleString('zh-CN')}
+                </span>
+              </div>
+            )}
+            
+            {/* Market Price Difference */}
+            {item.assistant_evidence?.market_price != null && item.assistant_prob != null && (
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500">与市场价差:</span>
+                <span className={`${
+                  (item.assistant_prob - item.assistant_evidence.market_price) > 0 
+                    ? 'text-green-400' 
+                    : (item.assistant_prob - item.assistant_evidence.market_price) < 0 
+                      ? 'text-red-400' 
+                      : 'text-zinc-300'
+                }`}>
+                  {((item.assistant_prob - item.assistant_evidence.market_price) * 100).toFixed(1)}%
+                  {item.assistant_prob > item.assistant_evidence.market_price ? ' ↑' : item.assistant_prob < item.assistant_evidence.market_price ? ' ↓' : ''}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* No data - show placeholder */
+        <div className="mt-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+          <div className="text-xs text-zinc-500 mb-2">概率计算 (assistant_prob)</div>
+          <p className="text-zinc-400 text-sm">未计算/待接入</p>
+        </div>
+      )}
+
       {/* P1: Weather Station Info */}
       {stationInfo && (
         <div className="mt-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
